@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class EditarRutinasScreen extends StatefulWidget {
-  const EditarRutinasScreen({Key? key}) : super(key: key);
+  const EditarRutinasScreen({super.key});
 
   @override
   _EditarRutinasScreenState createState() => _EditarRutinasScreenState();
@@ -11,7 +11,7 @@ class _EditarRutinasScreenState extends State<EditarRutinasScreen> {
   int _selectedIndex = 0;
 
   // Lista de contenidos asociados a cada ítem del NavigationRail
-  List<List<String>> _contenidos = [
+  final List<List<String>> _contenidos = [
     // Contenido para cada día de la semana
     ['Brazo', 'Abdomen', 'Pierna', 'Cardio'], // Lunes
     ['Contenido Martes'], // Martes
@@ -23,13 +23,13 @@ class _EditarRutinasScreenState extends State<EditarRutinasScreen> {
   ];
 
   // Lista de letras iniciales de los días de la semana
-  List<String> _letras = ['L', 'M', 'Mi', 'J', 'V', 'S', 'D'];
+  final List<String> _letras = ['L', 'M', 'Mi', 'J', 'V', 'S', 'D'];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Editar Rutinas'),
+        title: const Text('Editar Rutinas'),
       ),
       body: Row(
         children: [
@@ -47,27 +47,27 @@ class _EditarRutinasScreenState extends State<EditarRutinasScreen> {
                 NavigationRailDestination(
                   icon: Text(
                     _letras[i],
-                    style: TextStyle(fontSize: 24, color: Colors.white),
+                    style: const TextStyle(fontSize: 24, color: Colors.white),
                   ),
                   selectedIcon: Text(
                     _letras[i],
-                    style: TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                   label: Text(
                     _getDiaDeLaSemana(i),
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
             ],
           ),
-          VerticalDivider(
+          const VerticalDivider(
             thickness: 1, // Grosor de la línea
             width: 1, // Ancho del divisor
             color: Colors.grey, // Color de la línea
           ),
           Expanded(
             child: Container(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -76,7 +76,7 @@ class _EditarRutinasScreenState extends State<EditarRutinasScreen> {
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: Text(
                         item,
-                        style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
                       ),
                     ),
                 ],

@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'editar_rutinas.dart';
 
 class RutinasScreen extends StatelessWidget {
-  const RutinasScreen({Key? key}) : super(key: key);
+  const RutinasScreen({super.key});
 
   String _getContenidoDelDia() {
     String diaDeLaSemana = DateFormat('EEEE', 'es_ES').format(DateTime.now());
@@ -65,7 +65,7 @@ class RutinasScreen extends StatelessWidget {
                             _mostrarOpciones(context); // Mostrar opciones al presionar el botón
                           },
                           style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16), // Ajustar el padding
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16), // Ajustar el padding
                             backgroundColor: Colors.redAccent, // Fondo del botón
                             foregroundColor: Colors.white, // Texto del botón
                           ),
@@ -77,7 +77,7 @@ class RutinasScreen extends StatelessWidget {
                             // Acción del segundo botón
                           },
                           style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16), // Ajustar el padding
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16), // Ajustar el padding
                             backgroundColor: Colors.redAccent, // Fondo del botón
                             foregroundColor: Colors.white, // Texto del botón
                           ),
@@ -124,11 +124,11 @@ class RutinasScreen extends StatelessWidget {
                   // Lógica cuando se presiona la opción 1 (cuadrado rojo)
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('En progreso')),
+                    const SnackBar(content: Text('En progreso')),
                   );
                 },
               ),
-              SizedBox(width: 16), // Espacio entre los botones
+              const SizedBox(width: 16), // Espacio entre los botones
               InteractiveSquare(
                 color: Colors.black,
                 iconData: Icons.fitness_center,
@@ -137,7 +137,7 @@ class RutinasScreen extends StatelessWidget {
                   Navigator.pop(context); // Cerrar el AlertDialog
                   Navigator.push( // Navegar a EditarRutinasScreen
                     context,
-                    MaterialPageRoute(builder: (context) => EditarRutinasScreen()),
+                    MaterialPageRoute(builder: (context) => const EditarRutinasScreen()),
                   );
                 },
               ),
@@ -160,8 +160,8 @@ class InteractiveSquare extends StatelessWidget {
     required this.iconData,
     required this.texto,
     required this.onPressed,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +182,7 @@ class InteractiveSquare extends StatelessWidget {
               color: Colors.white,
               size: 80, // Ajustar el tamaño del ícono
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               texto,
               style: const TextStyle(color: Colors.white, fontSize: 23, fontWeight: FontWeight.bold), // Ajustar el tamaño del texto
