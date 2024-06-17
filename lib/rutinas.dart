@@ -40,7 +40,7 @@ class RutinasScreen extends StatelessWidget {
                 fit: StackFit.expand,
                 children: [
                   Image.asset(
-                    'assets/rutinas.jpg', // Ruta de tu imagen
+                    'assets/rutinas/rutinas_main.jpg', // Ruta de tu imagen
                     fit: BoxFit.cover, // Ajusta la imagen para cubrir el área disponible
                   ),
                   Container(
