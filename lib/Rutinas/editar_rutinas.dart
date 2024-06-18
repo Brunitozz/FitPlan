@@ -1,21 +1,6 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Editar Rutinas',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: EditarRutinasScreen(),
-    );
-  }
-}
+import 'package:provider/provider.dart';
+import 'provider.dart'; // Asegúrate de tener la ruta correcta
 
 class EditarRutinasScreen extends StatefulWidget {
   const EditarRutinasScreen({Key? key}) : super(key: key);
@@ -29,19 +14,6 @@ class _EditarRutinasScreenState extends State<EditarRutinasScreen> {
   late List<List<Widget>> _contenidos;
 
   final List<String> _letras = ['L', 'M', 'Mi', 'J', 'V', 'S', 'D'];
-  late Map<String, Map<String, int>> _rutinas = {
-    'Rowing': {'repeticiones': 0, 'series': 0},
-    'Chest Press': {'repeticiones': 0, 'series': 0},
-    'Shoulder Press': {'repeticiones': 0, 'series': 0},
-    'C. chair': {'repeticiones': 0, 'series': 0},
-    'Crunch': {'repeticiones': 0, 'series': 0},
-    'Calf raise': {'repeticiones': 0, 'series': 0},
-    'Leg curl': {'repeticiones': 0, 'series': 0},
-    'Leg press': {'repeticiones': 0, 'series': 0},
-    'Elliptical': {'repeticiones': 0, 'series': 0},
-    'Treadmill': {'repeticiones': 0, 'series': 0},
-    'Stationary bike': {'repeticiones': 0, 'series': 0},
-  };
 
   @override
   void initState() {
@@ -104,116 +76,103 @@ class _EditarRutinasScreenState extends State<EditarRutinasScreen> {
   }
 
   Widget _buildRedSquare(String imagePath, String label) {
-    TextEditingController repeticionesController =
-    TextEditingController(text: _rutinas[label]!['repeticiones'].toString());
-    TextEditingController seriesController =
-    TextEditingController(text: _rutinas[label]!['series'].toString());
-
     return GestureDetector(
       onTap: () {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            int repeticiones = _rutinas[label]!['repeticiones']!;
-            int series = _rutinas[label]!['series']!;
-
-            return StatefulBuilder(
-              builder: (BuildContext context, StateSetter setState) {
-                void _updateRepeticiones(String newValue) {
-                  setState(() {
-                    repeticiones = int.tryParse(newValue) ?? repeticiones;
-                  });
-                }
-
-                void _updateSeries(String newValue) {
-                  setState(() {
-                    series = int.tryParse(newValue) ?? series;
-                  });
-                }
-
-                return AlertDialog(
-                  title: Text('Añadir rutina $label'),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      if (_rutinas[label]!['repeticiones']! > 0)
-                        Text('Rutina ya creada'),
-                      if (_rutinas[label]!['repeticiones']! == 0)
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Coloque los valores a su criterio $label.'),
-                            SizedBox(height: 16),
-                            _buildTextField(
-                              labelText: 'Repeticiones',
-                              controller: repeticionesController,
-                              onUpdate: _updateRepeticiones,
-                            ),
-                            SizedBox(height: 16),
-                            _buildTextField(
-                              labelText: 'Series',
-                              controller: seriesController,
-                              onUpdate: _updateSeries,
-                            ),
-                          ],
-                        ),
-                    ],
-                  ),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Cerrar'),
-                    ),
-                    if (_rutinas[label]!['repeticiones']! == 0)
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            _rutinas[label]!['repeticiones'] = repeticiones;
-                            _rutinas[label]!['series'] = series;
-                          });
-                          _updateContents(); // Se actualiza el contenido aquí
-                          _printRutinas();
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('Crear'),
-                      ),
-                  ],
-                );
-              },
-            );
-          },
-        );
+        _showEditDialog(context, label);
       },
-      child: Container(
-        width: 120,
-        height: 140,
-        margin: EdgeInsets.only(right: 8.0),
-        decoration: BoxDecoration(
-          color: (_rutinas[label]!['repeticiones'] == 0 && _rutinas[label]!['series'] == 0)
-              ? Colors.redAccent.withOpacity(0.5)
-              : Colors.green.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(imagePath, width: 80, height: 80, fit: BoxFit.cover),
-            SizedBox(height: 8),
-            Text(label, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-          ],
-        ),
+      child: Consumer<RutinasProvider>(
+        builder: (context, rutinasProvider, child) {
+          Rutina rutina = rutinasProvider.rutinas[label]!;
+          return Container(
+            width: 120,
+            height: 140,
+            margin: EdgeInsets.only(right: 8.0),
+            decoration: BoxDecoration(
+              color: (rutina.repeticiones == 0 && rutina.series == 0)
+                  ? Colors.redAccent.withOpacity(0.5)
+                  : Colors.green.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(imagePath, width: 80, height: 80, fit: BoxFit.cover),
+                SizedBox(height: 8),
+                Text(label, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 
-  void _printRutinas() {
-    print('Datos de rutinas:');
-    _rutinas.forEach((key, value) {
-      print('$key: Repeticiones=${value['repeticiones']}, Series=${value['series']}');
-    });
+  void _showEditDialog(BuildContext context, String label) {
+    TextEditingController repeticionesController = TextEditingController();
+    TextEditingController seriesController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Consumer<RutinasProvider>(
+          builder: (context, rutinasProvider, child) {
+            Rutina rutina = rutinasProvider.rutinas[label]!;
+
+            repeticionesController.text = rutina.repeticiones.toString();
+            seriesController.text = rutina.series.toString();
+
+            return AlertDialog(
+              title: Text('Añadir rutina $label'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  if (rutina.repeticiones > 0)
+                    Text('Rutina ya creada'),
+                  if (rutina.repeticiones == 0)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Coloque los valores a su criterio $label.'),
+                        SizedBox(height: 16),
+                        _buildTextField(
+                          labelText: 'Repeticiones',
+                          controller: repeticionesController,
+                        ),
+                        SizedBox(height: 16),
+                        _buildTextField(
+                          labelText: 'Series',
+                          controller: seriesController,
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cerrar'),
+                ),
+                if (rutina.repeticiones == 0)
+                  TextButton(
+                    onPressed: () {
+                      rutinasProvider.updateRutina(
+                        label,
+                        int.parse(repeticionesController.text),
+                        int.parse(seriesController.text),
+                      );
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Crear'),
+                  ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   void _updateContents() {
@@ -276,7 +235,6 @@ class _EditarRutinasScreenState extends State<EditarRutinasScreen> {
   Widget _buildTextField({
     required String labelText,
     required TextEditingController controller,
-    required ValueChanged<String> onUpdate,
   }) {
     return Row(
       children: [
@@ -289,7 +247,6 @@ class _EditarRutinasScreenState extends State<EditarRutinasScreen> {
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.white),
             keyboardType: TextInputType.number,
-            onChanged: onUpdate,
             decoration: InputDecoration(
               border: UnderlineInputBorder(),
               contentPadding: EdgeInsets.symmetric(vertical: 5),

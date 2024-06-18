@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:provider/provider.dart'; // Importa provider
 import 'maquinas.dart';
-import 'rutinas.dart';
+import 'Rutinas/rutinas.dart';
+import 'Rutinas/provider.dart'; // Importa RutinasProvider
 
 void main() async {
   await initializeDateFormatting('es_ES', null); // Inicializa la configuración para español España
@@ -13,18 +15,23 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Smart Fit',
-      theme: ThemeData(
-        primaryColor: Colors.red, // Color de la barra superior
-        colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.white), // Esquema de colores
-        scaffoldBackgroundColor: Colors.white, // Color de fondo del Scaffold
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.red, // Color de fondo de la AppBar
-          foregroundColor: Colors.white, // Color del contenido de la AppBar
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => RutinasProvider()),
+      ],
+      child: MaterialApp(
+        title: 'Smart Fit',
+        theme: ThemeData(
+          primaryColor: Colors.red, // Color de la barra superior
+          colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.white), // Esquema de colores
+          scaffoldBackgroundColor: Colors.white, // Color de fondo del Scaffold
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.red, // Color de fondo de la AppBar
+            foregroundColor: Colors.white, // Color del contenido de la AppBar
+          ),
         ),
+        home: const MyHomePage(),
       ),
-      home: const MyHomePage(),
     );
   }
 }
@@ -42,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String _getTitle() {
     switch (_currentIndex) {
       case 0:
-        return 'Maquinas';
+        return 'Máquinas';
       case 1:
         return 'Rutinas';
       case 2:
@@ -67,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
           IconButton(
             onPressed: () {
               // Implementa la acción para el ícono de fotos si es necesario
-              print('Icono de fotos presionado');
+              print('Ícono de fotos presionado');
             },
             icon: const Icon(Icons.home),
           ),
@@ -125,7 +132,6 @@ class _MyHomePageState extends State<MyHomePage> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          //const Center(child: Text('Contenido Máquinas xddd')), // Contenido para Máquina
           const MaquinasScreen(),
           const RutinasScreen(), // Contenido para Rutinas
           const Center(child: Text('Contenido Dietas')), // Contenido para Dietas
