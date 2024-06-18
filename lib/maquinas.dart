@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-
+import 'package:http/http.dart' as http;
 class MaquinasScreen extends StatelessWidget {
   const MaquinasScreen({Key? key}) : super(key: key);
 
