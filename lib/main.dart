@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-
+import 'maquinas.dart';
 import 'rutinas.dart';
 
 void main() async {
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Smart Fit',
       theme: ThemeData(
         primaryColor: Colors.red, // Color de la barra superior
         colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.white), // Esquema de colores
@@ -42,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String _getTitle() {
     switch (_currentIndex) {
       case 0:
-        return 'Inicio';
+        return 'Maquinas';
       case 1:
         return 'Rutinas';
       case 2:
@@ -125,7 +125,8 @@ class _MyHomePageState extends State<MyHomePage> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          const Center(child: Text('Contenido Máquinas')), // Contenido para Máquinas
+          //const Center(child: Text('Contenido Máquinas xddd')), // Contenido para Máquina
+          const MaquinasScreen(),
           const RutinasScreen(), // Contenido para Rutinas
           const Center(child: Text('Contenido Dietas')), // Contenido para Dietas
         ],
