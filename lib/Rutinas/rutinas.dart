@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart'; // Importar provider
 import 'editar_rutinas.dart';
+import 'provider.dart'; // Importar RutinasProvider
+
 
 class RutinasScreen extends StatelessWidget {
   const RutinasScreen({Key? key}) : super(key: key);
@@ -33,15 +36,15 @@ class RutinasScreen extends StatelessWidget {
       body: Column(
         children: [
           Flexible(
-            flex: 2, // Ocupa 2 partes de 3 (2/3 del espacio)
+            flex: 2,
             child: AspectRatio(
-              aspectRatio: 2.75 / 1, // Relación de aspecto deseada (ejemplo: 16:9)
+              aspectRatio: 2.75 / 1,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
                   Image.asset(
-                    'assets/rutinas/rutinas_main.jpg', // Ruta de tu imagen
-                    fit: BoxFit.cover, // Ajusta la imagen para cubrir el área disponible
+                    'assets/rutinas/rutinas_main.jpg',
+                    fit: BoxFit.cover,
                   ),
                   Container(
                     decoration: BoxDecoration(
@@ -56,32 +59,32 @@ class RutinasScreen extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    right: 16.0, // Espaciado desde el borde derecho
-                    bottom: 16.0, // Espaciado desde la parte inferior
+                    right: 16.0,
+                    bottom: 16.0,
                     child: Row(
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            _mostrarOpciones(context); // Mostrar opciones al presionar el botón
+                            _mostrarOpciones(context);
                           },
                           style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16), // Ajustar el padding
-                            backgroundColor: Colors.redAccent, // Fondo del botón
-                            foregroundColor: Colors.white, // Texto del botón
+                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                            backgroundColor: Colors.redAccent,
+                            foregroundColor: Colors.white,
                           ),
-                          child: const Text('Editar rutina', style: TextStyle(fontSize: 16)), // Ajustar el tamaño del texto
+                          child: const Text('Editar rutina', style: TextStyle(fontSize: 16)),
                         ),
-                        const SizedBox(width: 16), // Espacio entre los botones
+                        const SizedBox(width: 16),
                         ElevatedButton(
                           onPressed: () {
                             // Acción del segundo botón
                           },
                           style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16), // Ajustar el padding
-                            backgroundColor: Colors.redAccent, // Fondo del botón
-                            foregroundColor: Colors.white, // Texto del botón
+                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                            backgroundColor: Colors.redAccent,
+                            foregroundColor: Colors.white,
                           ),
-                          child: const Text('Rutinas sugeridas', style: TextStyle(fontSize: 16)), // Ajustar el tamaño del texto
+                          child: const Text('Rutinas sugeridas', style: TextStyle(fontSize: 16)),
                         ),
                       ],
                     ),
@@ -91,13 +94,18 @@ class RutinasScreen extends StatelessWidget {
             ),
           ),
           Flexible(
-            flex: 1, // Ocupa 1 parte de 3 (1/3 del espacio)
+            flex: 1,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Center(
-                child: Text(
-                  _getContenidoDelDia(),
-                  style: const TextStyle(fontSize: 18),
+                child: Consumer<RutinasProvider>(
+                  builder: (context, rutinasProvider, child) {
+                    String contenido = _getContenidoDelDia();
+                    return Text(
+                      contenido,
+                      style: const TextStyle(fontSize: 18),
+                    );
+                  },
                 ),
               ),
             ),
@@ -112,7 +120,7 @@ class RutinasScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.transparent, // Fondo transparente
+          backgroundColor: Colors.transparent,
           content: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -121,21 +129,20 @@ class RutinasScreen extends StatelessWidget {
                 iconData: Icons.directions_run,
                 texto: 'Calistenia',
                 onPressed: () {
-                  // Lógica cuando se presiona la opción 1 (cuadrado rojo)
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('En progreso')),
                   );
                 },
               ),
-              SizedBox(width: 16), // Espacio entre los botones
+              SizedBox(width: 16),
               InteractiveSquare(
                 color: Colors.black,
                 iconData: Icons.fitness_center,
                 texto: 'Gimnasio',
                 onPressed: () {
-                  Navigator.pop(context); // Cerrar el AlertDialog
-                  Navigator.push( // Navegar a EditarRutinasScreen
+                  Navigator.pop(context);
+                  Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => EditarRutinasScreen()),
                   );
@@ -168,11 +175,11 @@ class InteractiveSquare extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        width: 200, // Ajustar el ancho del cuadro
-        height: 200, // Ajustar el alto del cuadro
+        width: 200,
+        height: 200,
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(20), // Bordes redondeados
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -180,12 +187,12 @@ class InteractiveSquare extends StatelessWidget {
             Icon(
               iconData,
               color: Colors.white,
-              size: 80, // Ajustar el tamaño del ícono
+              size: 80,
             ),
             SizedBox(height: 8),
             Text(
               texto,
-              style: const TextStyle(color: Colors.white, fontSize: 23, fontWeight: FontWeight.bold), // Ajustar el tamaño del texto
+              style: const TextStyle(color: Colors.white, fontSize: 23, fontWeight: FontWeight.bold),
             ),
           ],
         ),
