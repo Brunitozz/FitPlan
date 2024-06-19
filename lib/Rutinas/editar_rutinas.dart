@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'provider.dart'; // Asegúrate de tener la ruta correcta
+import 'provider.dart';
 
 class EditarRutinasScreen extends StatefulWidget {
   const EditarRutinasScreen({Key? key}) : super(key: key);

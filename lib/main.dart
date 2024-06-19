@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:provider/provider.dart'; // Importa provider
+import 'package:provider/provider.dart';
 import 'maquinas.dart';
 import 'Rutinas/rutinas.dart';
-import 'Rutinas/provider.dart'; // Importa RutinasProvider
+import 'Rutinas/provider.dart';
 
 void main() async {
-  await initializeDateFormatting('es_ES', null); // Inicializa la configuración para español España
+  await initializeDateFormatting('es_ES', null);
   runApp(const MyApp());
 }
 
@@ -73,7 +73,6 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [
           IconButton(
             onPressed: () {
-              // Implementa la acción para el ícono de fotos si es necesario
               print('Ícono de fotos presionado');
             },
             icon: const Icon(Icons.home),
@@ -136,13 +135,6 @@ class _MyHomePageState extends State<MyHomePage> {
           const RutinasScreen(), // Contenido para Rutinas
           const Center(child: Text('Contenido Dietas')), // Contenido para Dietas
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Implementa la acción para el botón de añadir si es necesario
-          print('Botón de añadir presionado');
-        },
-        child: const Icon(Icons.add),
       ),
     );
   }

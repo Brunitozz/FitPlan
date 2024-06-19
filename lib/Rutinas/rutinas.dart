@@ -1,34 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart'; // Importar provider
+import 'package:provider/provider.dart';
 import 'editar_rutinas.dart';
 import 'provider.dart'; // Importar RutinasProvider
 
+String diaDeLaSemana = DateFormat('EEEE', 'es_ES').format(DateTime.now());
 
 class RutinasScreen extends StatelessWidget {
   const RutinasScreen({Key? key}) : super(key: key);
-
-  String _getContenidoDelDia() {
-    String diaDeLaSemana = DateFormat('EEEE', 'es_ES').format(DateTime.now());
-    switch (diaDeLaSemana.toLowerCase()) {
-      case 'lunes':
-        return 'Contenido para el Lunes...';
-      case 'martes':
-        return 'Contenido para el Martes...';
-      case 'miércoles':
-        return 'Contenido para el Miércoles...';
-      case 'jueves':
-        return 'Contenido para el Jueves...';
-      case 'viernes':
-        return 'Contenido para el Viernes...';
-      case 'sábado':
-        return 'Contenido para el Sábado...';
-      case 'domingo':
-        return 'Contenido para el Domingo...';
-      default:
-        return 'Contenido de las rutinas...';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,11 +79,7 @@ class RutinasScreen extends StatelessWidget {
               child: Center(
                 child: Consumer<RutinasProvider>(
                   builder: (context, rutinasProvider, child) {
-                    String contenido = _getContenidoDelDia();
-                    return Text(
-                      contenido,
-                      style: const TextStyle(fontSize: 18),
-                    );
+                    return mostrarRutinas(rutinasProvider);
                   },
                 ),
               ),
@@ -112,6 +87,95 @@ class RutinasScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget mostrarRutinas(RutinasProvider rutinasProvider) {
+    switch (diaDeLaSemana.toLowerCase()) {
+      case 'lunes':
+        return _buildRutinasList(rutinasProvider);
+      case 'martes':
+        return _buildMensaje('¡Martes libre, recupera energías!');
+      case 'miércoles':
+        return _buildRutinasList(rutinasProvider);
+      case 'jueves':
+        return _buildMensaje('¡Jueves libre, recupera energías!');
+      case 'viernes':
+        return _buildMensaje('¡Viernes libre, recupera energías!');
+      case 'sábado':
+        return _buildMensaje('¡Sábado libre, recupera energías!');
+      case 'domingo':
+        return _buildMensaje('¡Domingo libre, recupera energías!');
+      default:
+        return _buildMensaje('Contenido de las rutinas...');
+    }
+  }
+
+  Widget _buildRutinasList(RutinasProvider rutinasProvider) {
+    List<Widget> rutinasWidgets = [];
+
+    rutinasProvider.rutinas.forEach((key, rutina) {
+      if (rutina.repeticiones > 0 && rutina.series > 0) {
+        rutinasWidgets.add(Container(
+          margin: EdgeInsets.only(bottom: 10),
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.redAccent.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              Image.asset(
+                obtenerImagen(rutina.name),
+                width: 80,
+                height: 80,
+                fit: BoxFit.cover,
+              ),
+              SizedBox(width: 10),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    rutina.name,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    'Repeticiones: ${rutina.repeticiones}',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  Text(
+                    'Series: ${rutina.series}',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ));
+      }
+    });
+
+    if (rutinasWidgets.isEmpty) {
+      return Text(
+        'No hay rutinas creadas para hoy.',
+        style: TextStyle(fontSize: 18),
+      );
+    }
+
+    return ListView(
+      children: rutinasWidgets,
+    );
+  }
+
+  Widget _buildMensaje(String mensaje) {
+    return Text(
+      mensaje,
+      style: TextStyle(fontSize: 18),
     );
   }
 
@@ -154,6 +218,35 @@ class RutinasScreen extends StatelessWidget {
       },
     );
   }
+
+  String obtenerImagen(String nombre) {
+    switch (nombre) {
+      case 'Rowing':
+        return 'assets/rutinas/rowing.png';
+      case 'Chest Press':
+        return 'assets/rutinas/chest_press.png';
+      case 'Shoulder Press':
+        return 'assets/rutinas/shoulder_press.png';
+      case 'C. chair':
+        return 'assets/rutinas/chair.png';
+      case 'Crunch':
+        return 'assets/rutinas/crunch.png';
+      case 'Calf raise':
+        return 'assets/rutinas/calf_raise.png';
+      case 'Leg curl':
+        return 'assets/rutinas/leg_curl.png';
+      case 'Leg press':
+        return 'assets/rutinas/leg_press.png';
+      case 'Elliptical':
+        return 'assets/rutinas/elliptical.png';
+      case 'Treadmill':
+        return 'assets/rutinas/treadmill.png';
+      case 'Stationary bike':
+        return 'assets/rutinas/stationary_bike.png';
+      default:
+        return 'assets/rutinas/rowing.png';
+    }
+  }
 }
 
 class InteractiveSquare extends StatelessWidget {
@@ -175,8 +268,8 @@ class InteractiveSquare extends StatelessWidget {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        width: 200,
-        height: 200,
+        width: 133,
+        height: 133,
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(20),
