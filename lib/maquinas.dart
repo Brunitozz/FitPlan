@@ -1,11 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-class MaquinasScreen extends StatelessWidget {
+
+class MaquinasScreen extends StatefulWidget {
   const MaquinasScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    late Map<String, Map<String, dynamic>> _maquinasDeCorrer = {
+  _MaquinasScreenState createState() => _MaquinasScreenState();
+}
+
+class _MaquinasScreenState extends State<MaquinasScreen> {
+  late Map<String, Map<String, dynamic>> _maquinasDeCorrer;
+  late Map<String, Map<String, dynamic>> _bicicletasEstaticas;
+
+  @override
+  void initState() {
+    super.initState();
+    _maquinasDeCorrer = {
       'maquina1': {
         'imagen': 'assets/maquinas/maquina-libre.png',
         'disponible': 0,
@@ -44,7 +55,7 @@ class MaquinasScreen extends StatelessWidget {
       },
     };
 
-    late Map<String, Map<String, dynamic>> _bicicletasEstaticas = {
+    _bicicletasEstaticas = {
       'bicicleta1': {
         'imagen': 'assets/maquinas/bicicleta-estatica-libre.png',
         'disponible': 0,
@@ -82,7 +93,85 @@ class MaquinasScreen extends StatelessWidget {
         'disponible': 1,
       },
     };
+  }
 
+  /*void getMaquinas() async {
+    CollectionReference collectionReference =
+        FirebaseFirestore.instance.collection("maquinasDeCorrer");
+    QuerySnapshot maquinasDeCorrer = await collectionReference.get();
+
+    if (maquinasDeCorrer.docs.length != 0) {
+      setState(() {
+        for (var maquina in maquinasDeCorrer.docs) {
+          var data = maquina.data() as Map<String, dynamic>;
+          _maquinasDeCorrer[maquina.id] = {
+            'imagen': data['imagen'],
+            'disponible': data['disponible'],
+          };
+        }
+      });
+    }
+  }
+
+  void getBicicletas() async {
+    CollectionReference collectionReference =
+        FirebaseFirestore.instance.collection("bicicletasEstaticas");
+    QuerySnapshot bicicletasEstaticas = await collectionReference.get();
+
+    if (bicicletasEstaticas.docs.length != 0) {
+      setState(() {
+        for (var maquina in bicicletasEstaticas.docs) {
+          var data = maquina.data() as Map<String, dynamic>;
+          _bicicletasEstaticas[maquina.id] = {
+            'imagen': data['imagen'],
+            'disponible': data['disponible'],
+          };
+        }
+      });
+    }
+  }*/
+
+  void _toggleAvailabilityMaquina(
+      String key, Map<String, dynamic> item) async {
+    setState(() {
+      if (item['disponible'] == 0) {
+        item['disponible'] = 1;
+        item['imagen'] = 'assets/maquinas/maquina-ocupada.png';
+      } else {
+        item['disponible'] = 0;
+        item['imagen'] = 'assets/maquinas/maquina-libre.png';
+      }
+    });
+
+    /*await FirebaseFirestore.instance.collection('maquinas').doc(key).set({
+      'disponible': item['disponible'],
+      'imagen': item['imagen'],
+    });*/
+  }
+
+  void _toggleAvailabilityBicicleta(
+      String key, Map<String, dynamic> item) async {
+    setState(() {
+      if (item['disponible'] == 0) {
+        item['disponible'] = 1;
+        item['imagen'] = 'assets/maquinas/bicicleta-estatica-ocupada.png';
+      } else {
+        item['disponible'] = 0;
+        item['imagen'] = 'assets/maquinas/bicicleta-estatica-libre.png';
+      }
+    });
+
+    /*await FirebaseFirestore.instance
+        .collection('bicicletasEstaticas')
+        .doc(key)
+        .set({
+      'disponible': item['disponible'],
+      'imagen': item['imagen'],
+    });*/
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Máquinas y Bicicletas Disponibles'),
@@ -94,11 +183,13 @@ class MaquinasScreen extends StatelessWidget {
               title: 'Máquinas de Correr',
               items: _maquinasDeCorrer,
               crossAxisCount: 3,
+              onItemTap: _toggleAvailabilityMaquina,
             ),
             SectionGrid(
               title: 'Bicicletas Estáticas',
               items: _bicicletasEstaticas,
               crossAxisCount: 3,
+              onItemTap: _toggleAvailabilityBicicleta,
             ),
           ],
         ),
@@ -111,11 +202,13 @@ class SectionGrid extends StatefulWidget {
   final String title;
   final Map<String, Map<String, dynamic>> items;
   final int crossAxisCount;
+  final void Function(String, Map<String, dynamic>) onItemTap;
 
   const SectionGrid({
     required this.title,
     required this.items,
     required this.crossAxisCount,
+    required this.onItemTap,
   });
 
   @override
@@ -153,13 +246,12 @@ class _SectionGridState extends State<SectionGrid> {
 
             return InkWell(
               onTap: () {
-                setState(() {
-                  _hovering[index] = !_hovering[index]!;
-                });
+                widget.onItemTap(key, item);
               },
               child: AnimatedContainer(
                 duration: Duration(milliseconds: 200),
-                margin: EdgeInsets.symmetric(vertical: _hovering[index] ?? false ? 0 : 10),
+                margin: EdgeInsets.symmetric(
+                    vertical: _hovering[index] ?? false ? 0 : 10),
                 child: Card(
                   color: cardColor,
                   child: Column(
