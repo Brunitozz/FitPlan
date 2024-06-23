@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:722724215256:android:39f04c63717d6a67d0baad",
+        "mobilesdk_app_id": "1:722724215256:android:60dab959afe39c10d0baad",
         "android_client_info": {
-          "package_name": "com.example.primera_aplicacion"
+          "package_name": "com.fitplan"
         }
       },
       "oauth_client": [],
