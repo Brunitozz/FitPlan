@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class MaquinasScreen extends StatefulWidget {
@@ -8,60 +9,17 @@ class MaquinasScreen extends StatefulWidget {
 }
 
 class _MaquinasScreenState extends State<MaquinasScreen> {
-  late Map<String, Map<String, dynamic>> _maquinasDeCorrer;
-  late Map<String, Map<String, dynamic>> _bicicletasEstaticas;
-  static const String imagenMaquina_Ocupada = "assets/maquinas/maquina-ocupada.png";
-  static const String imagenMaquina_Libre = "assets/maquinas/maquina-libre.png";
-  static const String imagenBicicleta_Estatica_Ocupada = "assets/maquinas/bicicleta-estatica-ocupada.png";
-  static const String imagenBicicleta_Estatica_Libre = "assets/maquinas/bicicleta-estatica-libre.png";
-
-  @override
-  void initState() {
-    super.initState();
-
-    _maquinasDeCorrer = {
-      'maquina1': {'disponible': 0},
-      'maquina2': {'disponible': 1},
-      'maquina3': {'disponible': 1},
-      'maquina4': {'disponible': 1},
-      'maquina5': {'disponible': 0},
-      'maquina6': {'disponible': 0},
-      'maquina7': {'disponible': 1},
-      'maquina8': {'disponible': 1},
-      'maquina9': {'disponible': 1},
-    };
-
-    _bicicletasEstaticas = {
-      'bicicleta1': {'disponible': 0},
-      'bicicleta2': {'disponible': 1},
-      'bicicleta3': {'disponible': 1},
-      'bicicleta4': {'disponible': 1},
-      'bicicleta5': {'disponible': 0},
-      'bicicleta6': {'disponible': 0},
-      'bicicleta7': {'disponible': 1},
-      'bicicleta8': {'disponible': 1},
-      'bicicleta9': {'disponible': 1},
-    };
-  }
-
-  void _toggleAvailabilityMaquina(String key, Map<String, dynamic> item) async {
-    setState(() {
-      item['disponible'] = item['disponible'] == 0 ? 1 : 0;
-    });
-  }
-
-  void _toggleAvailabilityBicicleta(String key, Map<String, dynamic> item) async {
-    setState(() {
-      item['disponible'] = item['disponible'] == 0 ? 1 : 0;
-    });
-  }
+  static const String imagenMaquinaOcupada = "assets/maquinas/maquina-ocupada.png";
+  static const String imagenMaquinaLibre = "assets/maquinas/maquina-libre.png";
+  static const String imagenBicicletaEstaticaOcupada = "assets/maquinas/bicicleta-estatica-ocupada.png";
+  static const String imagenBicicletaEstaticaLibre = "assets/maquinas/bicicleta-estatica-libre.png";
 
   String _getImageForMaquina(bool isAvailable) {
-    return isAvailable ? imagenMaquina_Libre : imagenMaquina_Ocupada;
+    return isAvailable ? imagenMaquinaLibre : imagenMaquinaOcupada;
   }
 
   String _getImageForBicicleta(bool isAvailable) {
-    return isAvailable ? imagenBicicleta_Estatica_Libre : imagenBicicleta_Estatica_Ocupada;
+    return isAvailable ? imagenBicicletaEstaticaLibre : imagenBicicletaEstaticaOcupada;
   }
 
   @override
@@ -73,24 +31,80 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SectionGrid(
-              title: 'Máquinas de Correr',
-              items: _maquinasDeCorrer,
-              crossAxisCount: 3,
-              onItemTap: _toggleAvailabilityMaquina,
-              getImage: _getImageForMaquina,
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance.collection('maquinasDeCorrer').snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(child: Text('No data found'));
+                }
+                
+                Map<String, Map<String, dynamic>> maquinasDeCorrer = {};
+                for (var doc in snapshot.data!.docs) {
+                  maquinasDeCorrer[doc.id] = {
+                    'disponible': doc['disponible'],
+                  };
+                }
+                return SectionGrid(
+                  title: 'Máquinas de Correr',
+                  items: maquinasDeCorrer,
+                  crossAxisCount: 3,
+                  onItemTap: _toggleAvailabilityMaquina,
+                  getImage: _getImageForMaquina,
+                );
+              },
             ),
-            SectionGrid(
-              title: 'Bicicletas Estáticas',
-              items: _bicicletasEstaticas,
-              crossAxisCount: 3,
-              onItemTap: _toggleAvailabilityBicicleta,
-              getImage: _getImageForBicicleta,
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance.collection('bicicletasEstaticas').snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(child: Text('No data found'));
+                }
+                
+                Map<String, Map<String, dynamic>> bicicletasEstaticas = {};
+                for (var doc in snapshot.data!.docs) {
+                  bicicletasEstaticas[doc.id] = {
+                    'disponible': doc['disponible'],
+                  };
+                }
+                return SectionGrid(
+                  title: 'Bicicletas Estáticas',
+                  items: bicicletasEstaticas,
+                  crossAxisCount: 3,
+                  onItemTap: _toggleAvailabilityBicicleta,
+                  getImage: _getImageForBicicleta,
+                );
+              },
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _toggleAvailabilityMaquina(String key, Map<String, dynamic> item) async {
+    bool newValue = item['disponible'] != 1;
+    await FirebaseFirestore.instance.collection('maquinasDeCorrer').doc(key).update({
+      'disponible': newValue ? 1 : 0,
+    });
+  }
+
+  void _toggleAvailabilityBicicleta(String key, Map<String, dynamic> item) async {
+    bool newValue = item['disponible'] != 1;
+    await FirebaseFirestore.instance.collection('bicicletasEstaticas').doc(key).update({
+      'disponible': newValue ? 1 : 0,
+    });
   }
 }
 
@@ -131,8 +145,7 @@ class SectionGrid extends StatelessWidget {
           itemBuilder: (BuildContext context, int index) {
             String key = items.keys.elementAt(index);
             Map<String, dynamic> item = items[key]!;
-            bool isAvailable = item['disponible'] == 0;
-
+            bool isAvailable = item['disponible'] == 1;
             return InkWell(
               onTap: () {
                 onItemTap(key, item);

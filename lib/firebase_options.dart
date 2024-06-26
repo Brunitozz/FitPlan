@@ -55,14 +55,16 @@ class DefaultFirebaseOptions {
     messagingSenderId: '722724215256',
     projectId: 'prueba-8a3b1',
     authDomain: 'prueba-8a3b1.firebaseapp.com',
+    databaseURL: 'https://prueba-8a3b1-default-rtdb.firebaseio.com',
     storageBucket: 'prueba-8a3b1.appspot.com',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAm5uuJzgufJYKIqvdVlwbqO8kOkif4U9I',
-    appId: '1:722724215256:android:60dab959afe39c10d0baad',
+    appId: '1:722724215256:android:26258d2facc66fb0d0baad',
     messagingSenderId: '722724215256',
     projectId: 'prueba-8a3b1',
+    databaseURL: 'https://prueba-8a3b1-default-rtdb.firebaseio.com',
     storageBucket: 'prueba-8a3b1.appspot.com',
   );
 }
