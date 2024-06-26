@@ -1,4 +1,4 @@
-# FitPlan - SpechElevator 🚀
+# FitPlan 🚀
 
 ## Descripción
 FitPlan es una aplicación móvil innovadora que proporciona información en tiempo real sobre la disponibilidad de máquinas y herramientas para gestionar rutinas de entrenamiento en gimnasios. Nuestra solución está diseñada tanto para usuarios de gimnasios como para propietarios, optimizando el uso de recursos y mejorando la experiencia del cliente.
