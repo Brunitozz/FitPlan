@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'maquinas.dart';
 import 'Rutinas/rutinas.dart';
 import 'Rutinas/provider.dart';
+import 'dietas/dietas.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -140,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           const MaquinasScreen(),
           const RutinasScreen(), // Contenido para Rutinas
-          const Center(child: Text('Contenido Dietas')), // Contenido para Dietas
+          const DietasScreen(), // Contenido para Dietas
         ],
       ),
     );
