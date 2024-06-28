@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'editar_rutinas.dart';
-import 'provider.dart'; // Importar RutinasProvider
+import 'provider.dart';
 
 String diaDeLaSemana = DateFormat('EEEE', 'es_ES').format(DateTime.now());
 
