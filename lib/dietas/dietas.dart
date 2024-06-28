@@ -8,12 +8,11 @@ class DietasScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          // First Flexible widget with AspectRatio, Stack, Image, Container, Positioned
-          Flexible(
-            flex: 2, // Ocupa 2 partes de 3 (2/3 del espacio)
-            child: AspectRatio(
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // First Flexible widget with AspectRatio, Stack, Image, Container, Positioned
+            AspectRatio(
               aspectRatio: 2.75 / 1, // Relación de aspecto deseada (ejemplo: 16:9)
               child: Stack(
                 fit: StackFit.expand,
@@ -34,7 +33,7 @@ class DietasScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Positioned(
+                  const Positioned(
                     left: 16.0, // Espaciado desde el borde izquierdo
                     bottom: 20.0, // Adjust spacing from bottom (reduced)
                     child: Text(
@@ -49,12 +48,7 @@ class DietasScreen extends StatelessWidget {
                 ],
               ),
             ),
-          ),
-
-          // Second Flexible widget with Padding, Row, Expanded, ElevatedButton
-          Flexible(
-            flex: 1, // Ocupa 1 parte de 3 (1/3 del espacio)
-            child: Padding(
+            Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -93,9 +87,9 @@ class DietasScreen extends StatelessWidget {
                               ),
                             ),
                             Container(
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: const BorderRadius.only(
+                                borderRadius: BorderRadius.only(
                                   bottomLeft: Radius.circular(20.0),
                                   bottomRight: Radius.circular(20.0),
                                 ),
@@ -119,7 +113,7 @@ class DietasScreen extends StatelessWidget {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const DietaVegetariana()),
+                          MaterialPageRoute(builder: (context) => const DietaVegetarianaScreen()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -145,9 +139,9 @@ class DietasScreen extends StatelessWidget {
                               ),
                             ),
                             Container(
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: const BorderRadius.only(
+                                borderRadius: BorderRadius.only(
                                   bottomLeft: Radius.circular(20.0),
                                   bottomRight: Radius.circular(20.0),
                                 ),
@@ -166,8 +160,8 @@ class DietasScreen extends StatelessWidget {
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

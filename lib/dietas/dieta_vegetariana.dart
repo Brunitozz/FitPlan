@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class DietaVegetariana extends StatelessWidget {
-  const DietaVegetariana({Key? key}) : super(key: key);
+class DietaVegetarianaScreen extends StatelessWidget {
+  const DietaVegetarianaScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detalles de la Dieta Clásica'),
+        title: const Text('Detalles de la Dieta Vegetariana'),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
