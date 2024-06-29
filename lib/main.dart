@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'maquinas.dart';
 import 'Rutinas/rutinas.dart';
 import 'Rutinas/provider.dart';
+import 'dietas.dart';
 
 void main() async {
   await initializeDateFormatting('es_ES', null);
@@ -133,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           const MaquinasScreen(),
           const RutinasScreen(), // Contenido para Rutinas
-          const Center(child: Text('Contenido Dietas')), // Contenido para Dietas
+          const DietasScreen() // Contenido para Dietas
         ],
       ),
     );
