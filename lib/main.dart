@@ -5,6 +5,7 @@ import 'maquinas.dart';
 import 'Rutinas/rutinas.dart';
 import 'Rutinas/provider.dart';
 import 'dietas.dart';
+import 'perfil.dart';
 
 void main() async {
   await initializeDateFormatting('es_ES', null);
@@ -55,6 +56,8 @@ class _MyHomePageState extends State<MyHomePage> {
         return 'Rutinas';
       case 2:
         return 'Dietas';
+      case 3:
+        return 'Perfil';
       default:
         return 'Inicio';
     }
@@ -126,6 +129,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.account_circle_outlined),
+              title: const Text('Perfil'),
+              onTap: () {
+                setState(() {
+                  _currentIndex = 3; // Cambia al índice de la página de perfil
+                  Navigator.pop(context); // Cerrar el Drawer después de la selección
+                });
+              },
+            ),
           ],
         ),
       ),
@@ -134,7 +147,8 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           const MaquinasScreen(),
           const RutinasScreen(), // Contenido para Rutinas
-          const DietasScreen() // Contenido para Dietas
+          const DietasScreen(), // Contenido para Dietas
+          const PerfilScreen(),// Contenido para Perfil
         ],
       ),
     );
