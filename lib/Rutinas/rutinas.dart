@@ -97,7 +97,7 @@ class RutinasScreen extends StatelessWidget {
       case 'martes':
         return _buildMensaje('¡Martes libre, recupera energías!');
       case 'miércoles':
-        return _buildRutinasList(rutinasProvider);
+        return _buildMensaje('¡Miércoles libre, recupera energías!');
       case 'jueves':
         return _buildMensaje('¡Jueves libre, recupera energías!');
       case 'viernes':
