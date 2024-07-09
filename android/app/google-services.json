@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "160425566466",
+    "firebase_url": "https://esp32-f9373-default-rtdb.firebaseio.com",
+    "project_id": "esp32-f9373",
+    "storage_bucket": "esp32-f9373.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:160425566466:android:069f46c47c663c8114621b",
+        "android_client_info": {
+          "package_name": "com.fitplan.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUG_gm_uid_QrT7yoaHC3ZTZnW5QgTuFI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:160425566466:android:b1138bd966bf6cad14621b",
+        "android_client_info": {
+          "package_name": "com.testing.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUG_gm_uid_QrT7yoaHC3ZTZnW5QgTuFI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

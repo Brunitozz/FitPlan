@@ -1,104 +1,64 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-class MaquinasScreen extends StatelessWidget {
+import 'package:firebase_database/firebase_database.dart';
+
+class MaquinasScreen extends StatefulWidget {
   const MaquinasScreen({Key? key}) : super(key: key);
 
   @override
+  _MaquinasScreenState createState() => _MaquinasScreenState();
+}
+
+class _MaquinasScreenState extends State<MaquinasScreen> {
+  DatabaseReference _movementRef =
+  FirebaseDatabase.instance.ref().child('movimiento').child('detect');
+
+  bool? movementDetected;
+
+  @override
+  void initState() {
+    super.initState();
+    _movementRef.onValue.listen((event) {
+      var snapshot = event.snapshot;
+      setState(() {
+        movementDetected = snapshot.value == 1;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    late Map<String, Map<String, dynamic>> _maquinasDeCorrer = {
-      'maquina1': {
-        'imagen': 'assets/maquinas/maquina-libre.png',
-        'disponible': 0,
-      },
-      'maquina2': {
-        'imagen': 'assets/maquinas/maquina-ocupada.png',
-        'disponible': 1,
-      },
-      'maquina3': {
-        'imagen': 'assets/maquinas/maquina-ocupada.png',
-        'disponible': 1,
-      },
-      'maquina4': {
-        'imagen': 'assets/maquinas/maquina-ocupada.png',
-        'disponible': 1,
-      },
-      'maquina5': {
-        'imagen': 'assets/maquinas/maquina-libre.png',
-        'disponible': 0,
-      },
-      'maquina6': {
-        'imagen': 'assets/maquinas/maquina-libre.png',
-        'disponible': 0,
-      },
-      'maquina7': {
-        'imagen': 'assets/maquinas/maquina-ocupada.png',
-        'disponible': 1,
-      },
-      'maquina8': {
-        'imagen': 'assets/maquinas/maquina-ocupada.png',
-        'disponible': 1,
-      },
-      'maquina9': {
-        'imagen': 'assets/maquinas/maquina-ocupada.png',
-        'disponible': 1,
-      },
-    };
-
-    late Map<String, Map<String, dynamic>> _bicicletasEstaticas = {
-      'bicicleta1': {
-        'imagen': 'assets/maquinas/bicicleta-estatica-libre.png',
-        'disponible': 0,
-      },
-      'bicicleta2': {
-        'imagen': 'assets/maquinas/bicicleta-estatica-ocupada.png',
-        'disponible': 1,
-      },
-      'bicicleta3': {
-        'imagen': 'assets/maquinas/bicicleta-estatica-ocupada.png',
-        'disponible': 1,
-      },
-      'bicicleta4': {
-        'imagen': 'assets/maquinas/bicicleta-estatica-ocupada.png',
-        'disponible': 1,
-      },
-      'bicicleta5': {
-        'imagen': 'assets/maquinas/bicicleta-estatica-libre.png',
-        'disponible': 0,
-      },
-      'bicicleta6': {
-        'imagen': 'assets/maquinas/bicicleta-estatica-libre.png',
-        'disponible': 0,
-      },
-      'bicicleta7': {
-        'imagen': 'assets/maquinas/bicicleta-estatica-ocupada.png',
-        'disponible': 1,
-      },
-      'bicicleta8': {
-        'imagen': 'assets/maquinas/bicicleta-estatica-ocupada.png',
-        'disponible': 1,
-      },
-      'bicicleta9': {
-        'imagen': 'assets/maquinas/bicicleta-estatica-ocupada.png',
-        'disponible': 1,
-      },
-    };
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Máquinas y Bicicletas Disponibles'),
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             SectionGrid(
               title: 'Máquinas de Correr',
-              items: _maquinasDeCorrer,
+              items: {
+                'maquina_con_firebase': {
+                  'imagenLibre': 'assets/maquinas/maquina-libre.png',
+                  'imagenOcupada': 'assets/maquinas/maquina-ocupada.png',
+                  'disponible': null, // Inicialmente desconocido
+                },
+                // Aquí van las otras máquinas de correr
+              },
               crossAxisCount: 3,
+              movementDetected: movementDetected,
             ),
             SectionGrid(
               title: 'Bicicletas Estáticas',
-              items: _bicicletasEstaticas,
+              items: {
+                'bicicleta_1': {
+                  'imagen': 'assets/maquinas/bicicleta-estatica-libre.png',
+                  'disponible': true,
+                },
+                'bicicleta_2': {
+                  'imagen': 'assets/maquinas/bicicleta-estatica-libre.png',
+                  'disponible': true,
+                },
+                // Agrega más bicicletas estáticas si es necesario
+              },
               crossAxisCount: 3,
+              movementDetected: null, // No detecta movimiento
             ),
           ],
         ),
@@ -107,23 +67,18 @@ class MaquinasScreen extends StatelessWidget {
   }
 }
 
-class SectionGrid extends StatefulWidget {
+class SectionGrid extends StatelessWidget {
   final String title;
   final Map<String, Map<String, dynamic>> items;
   final int crossAxisCount;
+  final bool? movementDetected;
 
   const SectionGrid({
     required this.title,
     required this.items,
     required this.crossAxisCount,
+    required this.movementDetected,
   });
-
-  @override
-  _SectionGridState createState() => _SectionGridState();
-}
-
-class _SectionGridState extends State<SectionGrid> {
-  final Map<int, bool> _hovering = {};
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +87,7 @@ class _SectionGridState extends State<SectionGrid> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
-            widget.title,
+            title,
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
         ),
@@ -140,45 +95,47 @@ class _SectionGridState extends State<SectionGrid> {
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: widget.crossAxisCount, // Número de columnas
-            childAspectRatio: 1, // Aspecto de las celdas
+            crossAxisCount: crossAxisCount,
+            childAspectRatio: 1,
           ),
-          itemCount: widget.items.length, // Número de elementos (celdas)
+          itemCount: items.length,
           itemBuilder: (BuildContext context, int index) {
-            String key = widget.items.keys.elementAt(index);
-            Map<String, dynamic> item = widget.items[key]!;
-            Color cardColor = item['disponible'] == 0
-                ? Color(0xFFBBF246) // Color verde personalizado
-                : Color(0xFFFF3C3C); // Color rojo personalizado
+            String key = items.keys.elementAt(index);
+            Map<String, dynamic> item = items[key]!;
+            Color cardColor;
+            String imagen;
 
-            return InkWell(
-              onTap: () {
-                setState(() {
-                  _hovering[index] = !_hovering[index]!;
-                });
-              },
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 200),
-                margin: EdgeInsets.symmetric(vertical: _hovering[index] ?? false ? 0 : 10),
-                child: Card(
-                  color: cardColor,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Image.asset(
-                          item['imagen'],
-                          fit: BoxFit.cover,
-                        ),
+            if (movementDetected != null) {
+              // Para máquinas de correr
+              cardColor = movementDetected == false ? Colors.green : Colors.red;
+              imagen = movementDetected == true ? item['imagenOcupada'] : item['imagenLibre'];
+            } else {
+              // Para bicicletas estáticas
+              cardColor = Colors.green;
+              imagen = item['imagen'];
+            }
+
+            return AnimatedContainer(
+              duration: Duration(milliseconds: 200),
+              margin: EdgeInsets.symmetric(vertical: 10),
+              child: Card(
+                color: cardColor,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Image.asset(
+                        imagen,
+                        fit: BoxFit.cover,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          '${widget.title.split(' ')[0]} ${index + 1}', // Nombre del ítem
-                          style: TextStyle(fontSize: 16),
-                        ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        '${title.split(' ')[0]} ${index + 1}',
+                        style: TextStyle(fontSize: 16),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             );

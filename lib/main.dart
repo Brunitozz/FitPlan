@@ -4,11 +4,20 @@ import 'package:provider/provider.dart';
 import 'maquinas.dart';
 import 'Rutinas/rutinas.dart';
 import 'Rutinas/provider.dart';
-import 'dietas.dart';
+import 'Dietas/dietas.dart';
 import 'perfil.dart';
+import 'login.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'firebase_options.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await initializeDateFormatting('es_ES', null);
+
   runApp(const MyApp());
 }
 
@@ -32,7 +41,12 @@ class MyApp extends StatelessWidget {
             foregroundColor: Colors.white, // Color del contenido de la AppBar
           ),
         ),
-        home: const MyHomePage(),
+        // Define las rutas de navegación
+        initialRoute: '/',
+        routes: {
+          '/': (context) => LoginScreen(), // Pantalla de inicio de sesión como ruta inicial
+          '/home': (context) => const MyHomePage(), // Pantalla principal
+        },
       ),
     );
   }

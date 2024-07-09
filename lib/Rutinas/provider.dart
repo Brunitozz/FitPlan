@@ -13,27 +13,26 @@ class Rutina {
 }
 
 class RutinasProvider with ChangeNotifier {
-  Map<String, Rutina> _rutinas = {
-    'Rowing': Rutina(name: 'Rowing', repeticiones: 0, series: 0),
-    'Chest Press': Rutina(name: 'Chest Press', repeticiones: 0, series: 0),
-    'Shoulder Press': Rutina(name: 'Shoulder Press', repeticiones: 0, series: 0),
-    'C. chair': Rutina(name: 'C. chair', repeticiones: 0, series: 0),
-    'Crunch': Rutina(name: 'Crunch', repeticiones: 0, series: 0),
-    'Calf raise': Rutina(name: 'Calf raise', repeticiones: 0, series: 0),
-    'Leg curl': Rutina(name: 'Leg curl', repeticiones: 0, series: 0),
-    'Leg press': Rutina(name: 'Leg press', repeticiones: 0, series: 0),
-    'Elliptical': Rutina(name: 'Elliptical', repeticiones: 0, series: 0),
-    'Treadmill': Rutina(name: 'Treadmill', repeticiones: 0, series: 0),
-    'Stationary bike': Rutina(name: 'Stationary bike', repeticiones: 0, series: 0),
+  // Mapa que contiene las rutinas para cada día de la semana
+  Map<String, Map<String, Rutina>> _rutinasPorDia = {
+    'lunes': {},
+    'martes': {},
+    'miércoles': {},
+    'jueves': {},
+    'viernes': {},
+    'sábado': {},
+    'domingo': {},
   };
 
-  Map<String, Rutina> get rutinas => _rutinas;
+  Map<String, Map<String, Rutina>> get rutinasPorDia => _rutinasPorDia;
 
-  void updateRutina(String name, int repeticiones, int series) {
-    if (_rutinas.containsKey(name)) {
-      _rutinas[name]!.repeticiones = repeticiones;
-      _rutinas[name]!.series = series;
-      notifyListeners();
+  void updateRutina(String dia, String name, int repeticiones, int series) {
+    if (!_rutinasPorDia[dia]!.containsKey(name)) {
+      _rutinasPorDia[dia]![name] = Rutina(name: name, repeticiones: repeticiones, series: series);
+    } else {
+      _rutinasPorDia[dia]![name]!.repeticiones = repeticiones;
+      _rutinasPorDia[dia]![name]!.series = series;
     }
+    notifyListeners();
   }
 }

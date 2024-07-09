@@ -11,15 +11,9 @@ class EditarRutinasScreen extends StatefulWidget {
 
 class _EditarRutinasScreenState extends State<EditarRutinasScreen> {
   int _selectedIndex = 0;
-  late List<List<Widget>> _contenidos;
 
   final List<String> _letras = ['L', 'M', 'Mi', 'J', 'V', 'S', 'D'];
-
-  @override
-  void initState() {
-    super.initState();
-    _updateContents();
-  }
+  final List<String> _dias = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +44,7 @@ class _EditarRutinasScreenState extends State<EditarRutinasScreen> {
                     style: TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                   label: Text(
-                    _getDiaDeLaSemana(i),
+                    _dias[i],
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -66,7 +60,7 @@ class _EditarRutinasScreenState extends State<EditarRutinasScreen> {
               padding: EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: _contenidos[_selectedIndex],
+                children: _buildContentForDay(_dias[_selectedIndex]),
               ),
             ),
           ),
@@ -75,20 +69,20 @@ class _EditarRutinasScreenState extends State<EditarRutinasScreen> {
     );
   }
 
-  Widget _buildRedSquare(String imagePath, String label) {
+  Widget _buildRedSquare(String imagePath, String label, String dia) {
     return GestureDetector(
       onTap: () {
-        _showEditDialog(context, label);
+        _showEditDialog(context, label, dia);
       },
       child: Consumer<RutinasProvider>(
         builder: (context, rutinasProvider, child) {
-          Rutina rutina = rutinasProvider.rutinas[label]!;
+          Rutina? rutina = rutinasProvider.rutinasPorDia[dia]![label];
           return Container(
             width: 120,
             height: 140,
             margin: EdgeInsets.only(right: 8.0),
             decoration: BoxDecoration(
-              color: (rutina.repeticiones == 0 && rutina.series == 0)
+              color: (rutina == null || (rutina.repeticiones == 0 && rutina.series == 0))
                   ? Colors.redAccent.withOpacity(0.5)
                   : Colors.green.withOpacity(0.5),
               borderRadius: BorderRadius.circular(8),
@@ -107,7 +101,7 @@ class _EditarRutinasScreenState extends State<EditarRutinasScreen> {
     );
   }
 
-  void _showEditDialog(BuildContext context, String label) {
+  void _showEditDialog(BuildContext context, String label, String dia) {
     TextEditingController repeticionesController = TextEditingController();
     TextEditingController seriesController = TextEditingController();
 
@@ -116,36 +110,26 @@ class _EditarRutinasScreenState extends State<EditarRutinasScreen> {
       builder: (BuildContext context) {
         return Consumer<RutinasProvider>(
           builder: (context, rutinasProvider, child) {
-            Rutina rutina = rutinasProvider.rutinas[label]!;
+            Rutina? rutina = rutinasProvider.rutinasPorDia[dia]![label];
 
-            repeticionesController.text = rutina.repeticiones.toString();
-            seriesController.text = rutina.series.toString();
+            repeticionesController.text = rutina?.repeticiones.toString() ?? '0';
+            seriesController.text = rutina?.series.toString() ?? '0';
 
             return AlertDialog(
-              title: Text('Añadir rutina $label'),
+              title: Text('Editar rutina $label para $dia'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  if (rutina.repeticiones > 0)
-                    Text('Rutina ya creada'),
-                  if (rutina.repeticiones == 0)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Coloque los valores a su criterio $label.'),
-                        SizedBox(height: 16),
-                        _buildTextField(
-                          labelText: 'Repeticiones',
-                          controller: repeticionesController,
-                        ),
-                        SizedBox(height: 16),
-                        _buildTextField(
-                          labelText: 'Series',
-                          controller: seriesController,
-                        ),
-                      ],
-                    ),
+                  _buildTextField(
+                    labelText: 'Repeticiones',
+                    controller: repeticionesController,
+                  ),
+                  SizedBox(height: 16),
+                  _buildTextField(
+                    labelText: 'Series',
+                    controller: seriesController,
+                  ),
                 ],
               ),
               actions: <Widget>[
@@ -155,18 +139,23 @@ class _EditarRutinasScreenState extends State<EditarRutinasScreen> {
                   },
                   child: Text('Cerrar'),
                 ),
-                if (rutina.repeticiones == 0)
-                  TextButton(
-                    onPressed: () {
-                      rutinasProvider.updateRutina(
-                        label,
-                        int.parse(repeticionesController.text),
-                        int.parse(seriesController.text),
-                      );
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Crear'),
-                  ),
+                TextButton(
+                  onPressed: () {
+                    rutinasProvider.updateRutina(
+                      dia,
+                      label,
+                      int.parse(repeticionesController.text),
+                      int.parse(seriesController.text),
+                    );
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Rutina guardada exitosamente'),
+                      ),
+                    );
+                  },
+                  child: Text('Guardar'),
+                ),
               ],
             );
           },
@@ -175,61 +164,52 @@ class _EditarRutinasScreenState extends State<EditarRutinasScreen> {
     );
   }
 
-  void _updateContents() {
-    _contenidos = [
-      [ // Lunes
-        Text('Brazo', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold)),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              _buildRedSquare('assets/rutinas/rowing.png', 'Rowing'),
-              _buildRedSquare('assets/rutinas/chest_press.png', 'Chest Press'),
-              _buildRedSquare('assets/rutinas/shoulder_press.png', 'Shoulder Press'),
-            ],
-          ),
+  List<Widget> _buildContentForDay(String dia) {
+    return [
+      Text('Brazo', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold)),
+      SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            _buildRedSquare('assets/rutinas/rowing.png', 'Rowing', dia),
+            _buildRedSquare('assets/rutinas/chest_press.png', 'Chest Press', dia),
+            _buildRedSquare('assets/rutinas/shoulder_press.png', 'Shoulder Press', dia),
+          ],
         ),
-        Text('Abdomen', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold)),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              _buildRedSquare('assets/rutinas/chair.png', 'C. chair'),
-              _buildRedSquare('assets/rutinas/crunch.png', 'Crunch'),
-            ],
-          ),
+      ),
+      Text('Abdomen', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold)),
+      SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            _buildRedSquare('assets/rutinas/chair.png', 'C. chair', dia),
+            _buildRedSquare('assets/rutinas/crunch.png', 'Crunch', dia),
+          ],
         ),
-        Text('Pierna', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold)),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              _buildRedSquare('assets/rutinas/calf_raise.png', 'Calf raise'),
-              _buildRedSquare('assets/rutinas/leg_curl.png', 'Leg curl'),
-              _buildRedSquare('assets/rutinas/leg_press.png', 'Leg press'),
-            ],
-          ),
+      ),
+      Text('Pierna', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold)),
+      SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            _buildRedSquare('assets/rutinas/calf_raise.png', 'Calf raise', dia),
+            _buildRedSquare('assets/rutinas/leg_curl.png', 'Leg curl', dia),
+            _buildRedSquare('assets/rutinas/leg_press.png', 'Leg press', dia),
+          ],
         ),
-        Text('Cardio', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold)),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              _buildRedSquare('assets/rutinas/elliptical.png', 'Elliptical'),
-              _buildRedSquare('assets/rutinas/treadmill.png', 'Treadmill'),
-              _buildRedSquare('assets/rutinas/stationary_bike.png', 'Stationary bike'),
-            ],
-          ),
+      ),
+      Text('Cardio', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold)),
+      SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            _buildRedSquare('assets/rutinas/elliptical.png', 'Elliptical', dia),
+            _buildRedSquare('assets/rutinas/treadmill.png', 'Treadmill', dia),
+            _buildRedSquare('assets/rutinas/stationary_bike.png', 'Stationary bike', dia),
+          ],
         ),
-      ],
-      [Text('Contenido Martes', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold))], // Martes
-      [Text('Contenido Miércoles', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold))], // Miércoles
-      [Text('Contenido Jueves', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold))], // Jueves
-      [Text('Contenido Viernes', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold))], // Viernes
-      [Text('Contenido Sábado', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold))], // Sábado
-      [Text('Contenido Domingo', style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold))], // Domingo
+      ),
     ];
-    setState(() {}); // Asegura que la pantalla se actualice inmediatamente
   }
 
   Widget _buildTextField({
@@ -238,14 +218,14 @@ class _EditarRutinasScreenState extends State<EditarRutinasScreen> {
   }) {
     return Row(
       children: [
-        Text(labelText + ' ', style: TextStyle(color: Colors.white)),
+        Text(labelText + ' ', style: TextStyle(color: Colors.black)),
         SizedBox(width: 8),
         SizedBox(
           width: 40,
           child: TextFormField(
             controller: controller,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.black),
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               border: UnderlineInputBorder(),
@@ -255,33 +235,12 @@ class _EditarRutinasScreenState extends State<EditarRutinasScreen> {
                 borderSide: BorderSide(color: Colors.blue),
               ),
               enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.white),
+                borderSide: BorderSide(color: Colors.black),
               ),
             ),
           ),
         ),
       ],
     );
-  }
-
-  String _getDiaDeLaSemana(int index) {
-    switch (index) {
-      case 0:
-        return 'Lunes';
-      case 1:
-        return 'Martes';
-      case 2:
-        return 'Miércoles';
-      case 3:
-        return 'Jueves';
-      case 4:
-        return 'Viernes';
-      case 5:
-        return 'Sábado';
-      case 6:
-        return 'Domingo';
-      default:
-        return '';
-    }
   }
 }

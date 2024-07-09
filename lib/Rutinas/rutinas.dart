@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'editar_rutinas.dart';
 import 'provider.dart'; // Importar RutinasProvider
+import 'rutinas_sugeridas.dart'; // Importar RutinasSugeridasScreen
 
 String diaDeLaSemana = DateFormat('EEEE', 'es_ES').format(DateTime.now());
 
@@ -56,7 +57,10 @@ class RutinasScreen extends StatelessWidget {
                         const SizedBox(width: 16),
                         ElevatedButton(
                           onPressed: () {
-                            // Acción del segundo botón
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => RutinasSugeridasScreen()),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -73,7 +77,7 @@ class RutinasScreen extends StatelessWidget {
             ),
           ),
           Flexible(
-            flex: 1,
+            flex: 3,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Center(
@@ -91,30 +95,18 @@ class RutinasScreen extends StatelessWidget {
   }
 
   Widget mostrarRutinas(RutinasProvider rutinasProvider) {
-    switch (diaDeLaSemana.toLowerCase()) {
-      case 'lunes':
-        return _buildRutinasList(rutinasProvider);
-      case 'martes':
-        return _buildMensaje('¡Martes libre, recupera energías!');
-      case 'miércoles':
-        return _buildMensaje('¡Miércoles libre, recupera energías!');
-      case 'jueves':
-        return _buildMensaje('¡Jueves libre, recupera energías!');
-      case 'viernes':
-        return _buildMensaje('¡Viernes libre, recupera energías!');
-      case 'sábado':
-        return _buildMensaje('¡Sábado libre, recupera energías!');
-      case 'domingo':
-        return _buildMensaje('¡Domingo libre, recupera energías!');
-      default:
-        return _buildMensaje('Contenido de las rutinas...');
+    String diaActual = diaDeLaSemana.toLowerCase();
+    if (rutinasProvider.rutinasPorDia.containsKey(diaActual)) {
+      return _buildRutinasList(rutinasProvider, diaActual);
+    } else {
+      return _buildMensaje('Contenido de las rutinas...');
     }
   }
 
-  Widget _buildRutinasList(RutinasProvider rutinasProvider) {
+  Widget _buildRutinasList(RutinasProvider rutinasProvider, String dia) {
     List<Widget> rutinasWidgets = [];
 
-    rutinasProvider.rutinas.forEach((key, rutina) {
+    rutinasProvider.rutinasPorDia[dia]!.forEach((key, rutina) {
       if (rutina.repeticiones > 0 && rutina.series > 0) {
         rutinasWidgets.add(Container(
           margin: EdgeInsets.only(bottom: 10),
@@ -167,8 +159,10 @@ class RutinasScreen extends StatelessWidget {
       );
     }
 
-    return ListView(
-      children: rutinasWidgets,
+    return Expanded(
+      child: ListView(
+        children: rutinasWidgets,
+      ),
     );
   }
 
