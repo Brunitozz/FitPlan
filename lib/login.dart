@@ -78,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('login/gimnasio.jpg'), // Ruta de tu imagen de fondo
+                image: AssetImage('assets/login/gimnasio.jpg'), // Ruta de tu imagen de fondo
                 fit: BoxFit.cover,
               ),
             ),
@@ -92,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
               children: <Widget>[
                 // Logo
                 Image.asset(
-                  'login/logo.png', // Ruta de tu imagen de logo
+                  'assets/login/logo.png', // Ruta de tu imagen de logo
                   height: 70, // Altura del logo
                   width: 70, // Ancho del logo
                 ),

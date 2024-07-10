@@ -72,6 +72,7 @@ flutter:
     - assets/maquinas/
     - assets/dietas/
     - assets/perfil/
+    - assets/login/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -62,10 +62,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAUG_gm_uid_QrT7yoaHC3ZTZnW5QgTuFI',
-    appId: '1:160425566466:android:069f46c47c663c8114621b',
+    appId: '1:160425566466:android:2ee4b49687699aaf14621b',
     messagingSenderId: '160425566466',
     projectId: 'esp32-f9373',
     databaseURL: 'https://esp32-f9373-default-rtdb.firebaseio.com',
     storageBucket: 'esp32-f9373.appspot.com',
   );
+
 }

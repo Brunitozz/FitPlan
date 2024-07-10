@@ -8,6 +8,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:160425566466:android:2ee4b49687699aaf14621b",
+        "android_client_info": {
+          "package_name": "com.example.primera_aplicacion"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUG_gm_uid_QrT7yoaHC3ZTZnW5QgTuFI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:160425566466:android:069f46c47c663c8114621b",
         "android_client_info": {
           "package_name": "com.fitplan.dev"
