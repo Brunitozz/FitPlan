@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class MaquinasScreen extends StatefulWidget {
-  const MaquinasScreen({Key? key}) : super(key: key);
+  final FirebaseFirestore firestoreInstance;
+
+  const MaquinasScreen({Key? key, required this.firestoreInstance}) : super(key: key);
 
   @override
   _MaquinasScreenState createState() => _MaquinasScreenState();
@@ -32,7 +34,7 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
         child: Column(
           children: [
             StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance.collection('maquinasDeCorrer').snapshots(),
+              stream: widget.firestoreInstance.collection('maquinasDeCorrer').snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
@@ -41,13 +43,17 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(child: Text('No data found'));
+                  // Return a non-empty widget, like a Text widget, if there's no data.
+                  // This helps prevent layout issues if the stream is empty.
+                  return Center(child: Text('No hay máquinas de correr disponibles'));
                 }
                 
                 Map<String, Map<String, dynamic>> maquinasDeCorrer = {};
                 for (var doc in snapshot.data!.docs) {
                   maquinasDeCorrer[doc.id] = {
                     'disponible': doc['disponible'],
+                     // Ensure other fields used by SectionGrid or its children are included if necessary
+                    'nombre': doc.id // Assuming doc.id is the name, or fetch from data
                   };
                 }
                 return SectionGrid(
@@ -60,7 +66,7 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
               },
             ),
             StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance.collection('bicicletasEstaticas').snapshots(),
+              stream: widget.firestoreInstance.collection('bicicletasEstaticas').snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
@@ -69,13 +75,15 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(child: Text('No data found'));
+                   // Return a non-empty widget, like a Text widget, if there's no data.
+                  return Center(child: Text('No hay bicicletas estáticas disponibles'));
                 }
                 
                 Map<String, Map<String, dynamic>> bicicletasEstaticas = {};
                 for (var doc in snapshot.data!.docs) {
                   bicicletasEstaticas[doc.id] = {
                     'disponible': doc['disponible'],
+                    'nombre': doc.id // Assuming doc.id is the name
                   };
                 }
                 return SectionGrid(
@@ -95,14 +103,14 @@ class _MaquinasScreenState extends State<MaquinasScreen> {
 
   void _toggleAvailabilityMaquina(String key, Map<String, dynamic> item) async {
     bool newValue = item['disponible'] != 1;
-    await FirebaseFirestore.instance.collection('maquinasDeCorrer').doc(key).update({
+    await widget.firestoreInstance.collection('maquinasDeCorrer').doc(key).update({
       'disponible': newValue ? 1 : 0,
     });
   }
 
   void _toggleAvailabilityBicicleta(String key, Map<String, dynamic> item) async {
     bool newValue = item['disponible'] != 1;
-    await FirebaseFirestore.instance.collection('bicicletasEstaticas').doc(key).update({
+    await widget.firestoreInstance.collection('bicicletasEstaticas').doc(key).update({
       'disponible': newValue ? 1 : 0,
     });
   }
@@ -121,10 +129,15 @@ class SectionGrid extends StatelessWidget {
     required this.crossAxisCount,
     required this.onItemTap,
     required this.getImage,
-  });
+    Key? key, // Added Key here
+  }) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
+    if (items.isEmpty) { // Handle case where items map is empty to avoid layout issues
+        return Center(child: Text('No hay ${title.toLowerCase()} disponibles en este momento.'));
+    }
     return Column(
       children: [
         Padding(
@@ -145,10 +158,16 @@ class SectionGrid extends StatelessWidget {
           itemBuilder: (BuildContext context, int index) {
             String key = items.keys.elementAt(index);
             Map<String, dynamic> item = items[key]!;
-            bool isAvailable = item['disponible'] == 1;
+            // Ensure 'disponible' field exists and has a default if null
+            bool isAvailable = item['disponible'] == 1; 
+            
+            // Construct the display name as used in the original code
+            String displayName = '${title.split(' ')[0]} ${index + 1}';
+            
             return InkWell(
               onTap: () {
-                onItemTap(key, item);
+                // Pass the actual document key (which is item['nombre'] or doc.id from Firestore)
+                onItemTap(key, item); 
               },
               child: Card(
                 color: isAvailable ? Color(0xFFBBF246) : Color(0xFFFF3C3C),
@@ -163,7 +182,7 @@ class SectionGrid extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        '${title.split(' ')[0]} ${index + 1}',
+                        displayName, // Use the generated display name
                         style: TextStyle(fontSize: 16),
                       ),
                     ),

@@ -138,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          const MaquinasScreen(),
+          MaquinasScreen(firestoreInstance: FirebaseFirestore.instance),
           const RutinasScreen(), // Contenido para Rutinas
           const DietasScreen(), // Contenido para Dietas
         ],
